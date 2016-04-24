@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Hexo</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2016-04-24T12:52:54.000Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>John Doe</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用Apache POI类库操作Excel</title>
+    <link href="http://yoursite.com/2016/04/24/%E4%BD%BF%E7%94%A8Apache-POI%E7%B1%BB%E5%BA%93%E6%93%8D%E4%BD%9CExcel/"/>
+    <id>http://yoursite.com/2016/04/24/使用Apache-POI类库操作Excel/</id>
+    <published>2016-04-24T10:56:29.000Z</published>
+    <updated>2016-04-24T12:52:54.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;最近一个朋友找我咨询Excel方面的问题，为了解答他的问题，我查阅了Excel的函数库，然后就感觉Excel里的预置函数更多是为不懂得编程的人设计的，比较傻瓜化，带来的后果就是不够灵活：明明一个很简单的功能如果使用预置公式的话就要绕很大一个圈子才能实现。所以我觉得有必要自己研究一下。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;PS:本文会不定期更新，我会把后续总结的Excel操作放上来&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&quot;概念&quot;&gt;&lt;a href=&quot;#概念&quot; class=&quot;headerlink&quot; title=&quot;概念&quot;&gt;&lt;/a&gt;概念&lt;/h4&gt;&lt;p&gt;首先明确POI中的几个概念：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WorkBook：代表你要操作的Excel文件&lt;/li&gt;
+&lt;li&gt;Sheet：Excel中的工作簿&lt;/li&gt;
+&lt;li&gt;Row：行&lt;/li&gt;
+&lt;li&gt;Column：列，注意，Excel是基于行的，&lt;strong&gt;POI中其实没有Column这个概念&lt;/strong&gt;，我写出来只是为了强调。&lt;h5 id=&quot;首先创建一个WorkBook&quot;&gt;&lt;a href=&quot;#首先创建一个WorkBook&quot; class=&quot;headerlink&quot; title=&quot;首先创建一个WorkBook&quot;&gt;&lt;/a&gt;首先创建一个WorkBook&lt;/h5&gt;POI针对Office 2007之前和之后的版本提供了两个Excel的表示，分别是：&lt;code&gt;HSSFWorkbook&lt;/code&gt;和&lt;code&gt;XSSFWorkbook&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;HSSWorkbook&lt;/code&gt; Office 2007之前的版本使用这个表示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;XSSFWorkbook&lt;/code&gt; Office 2007以及之后的版本使用这个表示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;具体创建一个Excel的WorkBook表示方法如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;HSSFWorkbook xlsWorkbook = new HSSFWorkbook(new FileInputStream(xlsWorkbookPath));
+XSSFWorkbook xlsxWorkbook = new XSSFWorkbook(new FileInputStream(xlsxWorkbookPath));
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样是不是很麻烦？别担心POI提供了工厂方法：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Workbook srcWorkBook = WorkbookFactory.create(new FileInputStream(srcPath));
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;好了，上面我们创建了Workbook，下面我们来看看如何操作Workbook。&lt;/p&gt;
+&lt;h5 id=&quot;获取工作簿&quot;&gt;&lt;a href=&quot;#获取工作簿&quot; class=&quot;headerlink&quot; title=&quot;获取工作簿&quot;&gt;&lt;/a&gt;获取工作簿&lt;/h5&gt;&lt;pre&gt;&lt;code&gt;Sheet sheet0 = srcWorkBook.getSheetAt(0);
+&lt;/code&gt;&lt;/pre&gt;&lt;h5 id=&quot;获取某一行&quot;&gt;&lt;a href=&quot;#获取某一行&quot; class=&quot;headerlink&quot; title=&quot;获取某一行&quot;&gt;&lt;/a&gt;获取某一行&lt;/h5&gt;&lt;pre&gt;&lt;code&gt;Row row = sheet0.getRow(0);
+&lt;/code&gt;&lt;/pre&gt;&lt;h5 id=&quot;获取最大行数的方法&quot;&gt;&lt;a href=&quot;#获取最大行数的方法&quot; class=&quot;headerlink&quot; title=&quot;获取最大行数的方法&quot;&gt;&lt;/a&gt;获取最大行数的方法&lt;/h5&gt;&lt;pre&gt;&lt;code&gt;int maxRows = sheet.getPhysicalNumberOfRows();
+&lt;/code&gt;&lt;/pre&gt;&lt;h5 id=&quot;获取某个单元格的方法&quot;&gt;&lt;a href=&quot;#获取某个单元格的方法&quot; class=&quot;headerlink&quot; title=&quot;获取某个单元格的方法&quot;&gt;&lt;/a&gt;获取某个单元格的方法&lt;/h5&gt;&lt;pre&gt;&lt;code&gt;Cell cell0 = row.getCell(0);
+&lt;/code&gt;&lt;/pre&gt;&lt;h5 id=&quot;获取单元格内容的方法&quot;&gt;&lt;a href=&quot;#获取单元格内容的方法&quot; class=&quot;headerlink&quot; title=&quot;获取单元格内容的方法&quot;&gt;&lt;/a&gt;获取单元格内容的方法&lt;/h5&gt;&lt;pre&gt;&lt;code&gt;cell.getStringCellValue(); // 文本类型的获取方法
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;POI中单元格的值一共有六种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;空&lt;/li&gt;
+&lt;li&gt;布尔型&lt;/li&gt;
+&lt;li&gt;错误&lt;/li&gt;
+&lt;li&gt;公式&lt;/li&gt;
+&lt;li&gt;数值&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;文本&lt;br&gt;大部分单元格的值都属于数值型，不同单元格获取值的方法也不同。&lt;/p&gt;
+&lt;h5 id=&quot;设置单元格内容的方法&quot;&gt;&lt;a href=&quot;#设置单元格内容的方法&quot; class=&quot;headerlink&quot; title=&quot;设置单元格内容的方法&quot;&gt;&lt;/a&gt;设置单元格内容的方法&lt;/h5&gt;&lt;p&gt; cell.setCellValue(value)&lt;/p&gt;
+&lt;h5 id=&quot;保存的方法&quot;&gt;&lt;a href=&quot;#保存的方法&quot; class=&quot;headerlink&quot; title=&quot;保存的方法&quot;&gt;&lt;/a&gt;保存的方法&lt;/h5&gt;&lt;p&gt; FileOutputStream fos = new FileOutputStream(destPath);&lt;br&gt; destWorkBook.write(fos);&lt;br&gt; fos.close();&lt;br&gt;&lt;a href=&quot;http://poi.apache.org&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Apache POI官网的地址&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;待续:)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;背景&quot;&gt;&lt;a href=&quot;#背景&quot; class=&quot;headerlink&quot; title=&quot;背景&quot;&gt;&lt;/a&gt;背景&lt;/h3&gt;&lt;p&gt;最近一个朋友找我咨询Excel方面的问题，为了解答他的问题，我查阅了Excel的函数库，然后就感觉Excel里的预置函数更多是为不懂得编程的
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>【译】为什么我还不想使用Kotlin来开发Android</title>
+    <link href="http://yoursite.com/2016/03/22/%E3%80%90%E8%AF%91%E3%80%91%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E8%BF%98%E4%B8%8D%E6%83%B3%E4%BD%BF%E7%94%A8Kotlin%E6%9D%A5%E5%BC%80%E5%8F%91Android/"/>
+    <id>http://yoursite.com/2016/03/22/【译】为什么我还不想使用Kotlin来开发Android/</id>
+    <published>2016-03-22T14:07:06.000Z</published>
+    <updated>2016-04-24T09:21:00.000Z</updated>
+    
+    <content type="html">&lt;p&gt;原文链接&lt;a href=&quot;http://gold.xitu.io/entry/56ea7118731956005d037ef1&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;在此&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;尽管Kotlin在许多方面都优于Java，但是还是有重大缺陷的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;请把它当成个人意见，如果你有这些问题的解决方案请在文后列出&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;1）编译缓慢&quot;&gt;&lt;a href=&quot;#1）编译缓慢&quot; class=&quot;headerlink&quot; title=&quot;1）编译缓慢&quot;&gt;&lt;/a&gt;1）编译缓慢&lt;/h3&gt;&lt;p&gt;小项目（一共约100个class，大部分是Kotlin）需要约1分钟的时间来编译。这是无法接受的。&lt;br&gt;&lt;a href=&quot;https://youtrack.jetbrains.com/issue/KT-6246&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://youtrack.jetbrains.com/issue/KT-6246&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;2-Kotlin-IDEA插件的性能&quot;&gt;&lt;a href=&quot;#2-Kotlin-IDEA插件的性能&quot; class=&quot;headerlink&quot; title=&quot;2) Kotlin IDEA插件的性能&quot;&gt;&lt;/a&gt;2) Kotlin IDEA插件的性能&lt;/h3&gt;&lt;p&gt;IDEA(Android Studio)中Kotlin的语法分析和高亮常常在输入的时候造成开发机卡顿，不可接受。&lt;/p&gt;
+&lt;h3 id=&quot;3-注解处理&quot;&gt;&lt;a href=&quot;#3-注解处理&quot; class=&quot;headerlink&quot; title=&quot;3) 注解处理&quot;&gt;&lt;/a&gt;3) 注解处理&lt;/h3&gt;&lt;p&gt;有时候会随机的出错然后就必须&lt;code&gt;clean&lt;/code&gt;。几乎每天我都会从不同地方看到抱怨，我不是一个人。&lt;/p&gt;
+&lt;h3 id=&quot;4-用Mockito来模拟Kotlin类很痛苦&quot;&gt;&lt;a href=&quot;#4-用Mockito来模拟Kotlin类很痛苦&quot; class=&quot;headerlink&quot; title=&quot;4) 用Mockito来模拟Kotlin类很痛苦&quot;&gt;&lt;/a&gt;4) 用Mockito来模拟Kotlin类很痛苦&lt;/h3&gt;&lt;p&gt;在Kotlin中几乎所有东西默认都是&lt;code&gt;final&lt;/code&gt;的：类，方法，等等。我喜欢这一点因为它强制要求不变性-&amp;gt;更少bug。但是它同时使得通过&lt;code&gt;Mockito&lt;/code&gt;（JVM世界的一种标准）模拟变的很痛苦而且背离了语言设计的方向。&lt;/p&gt;
+&lt;p&gt;是的，PowerMock是一种可能的解决方案，但是它跟一些Robolectric这类的工具关联而且总得来说有一个很好的原则就是你不应该模拟final类和final方法。&lt;/p&gt;
+&lt;p&gt;我理解Java的问题：所有的东西从设计上就不是final的，但是同时&lt;strong&gt;我不希望仅仅为了测试去修改代码&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&quot;5-目前还没有Kotlin的静态分析工具&quot;&gt;&lt;a href=&quot;#5-目前还没有Kotlin的静态分析工具&quot; class=&quot;headerlink&quot; title=&quot;5) 目前还没有Kotlin的静态分析工具&quot;&gt;&lt;/a&gt;5) 目前还没有Kotlin的静态分析工具&lt;/h3&gt;&lt;p&gt;是的，&lt;code&gt;kotlinc&lt;/code&gt;为代码增加比&lt;code&gt;javac&lt;/code&gt;更多安全性，但是如果你想使编译器达到更高的性能的话，你不会想让它变成静态分析器的。&lt;/p&gt;
+&lt;p&gt;静态代码分析工具对CI来说很好，但是你也许不想在本地开发时每次点击IDE上的&lt;code&gt;run&lt;/code&gt;按钮都运行它&lt;/p&gt;
+&lt;p&gt;Java有：FindBugs，PMD，Checkstyle，Sonarqube，Error Prone，FB infer。&lt;/p&gt;
+&lt;p&gt;Kotlin有：&lt;code&gt;kotlinc&lt;/code&gt;。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;上面的观点是客观的，我希望。下面的观点更加主观。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;6-是equals-而不是引用比较&quot;&gt;&lt;a href=&quot;#6-是equals-而不是引用比较&quot; class=&quot;headerlink&quot; title=&quot;6) ==是equals()而不是引用比较&quot;&gt;&lt;/a&gt;6) &lt;code&gt;==&lt;/code&gt;是&lt;code&gt;equals()&lt;/code&gt;而不是引用比较&lt;/h3&gt;&lt;p&gt;如果Kotlin是“更好的”Java或是“Java吃了兴奋剂”那么它就应该更好，而不是相反。&lt;/p&gt;
+&lt;p&gt;想象一下你正在用Kotlin重写Java工程，你的工程中会同时有Java和Kotlin代码。&lt;/p&gt;
+&lt;p&gt;你将会读写工作起来不同的同一套代码。这也是我不喜欢Groovy的一个原因。&lt;/p&gt;
+&lt;h3 id=&quot;7-如果使用不当运算符重载会造成严重后果&quot;&gt;&lt;a href=&quot;#7-如果使用不当运算符重载会造成严重后果&quot; class=&quot;headerlink&quot; title=&quot;7) 如果使用不当运算符重载会造成严重后果&quot;&gt;&lt;/a&gt;7) 如果使用不当运算符重载会造成严重后果&lt;/h3&gt;&lt;p&gt;说明1：将来你会需要去处理老旧的Kotlin代码基线&lt;br&gt;说明2：通过扩展功能你可以为&lt;strong&gt;已有&lt;/strong&gt;的Java类添加运算符重载&lt;/p&gt;
+&lt;p&gt;现在想象一下你看到一些诸如&lt;code&gt;val person3 = person1 + person2&lt;/code&gt;这样已写好的代码需要处理。&lt;/p&gt;
+&lt;p&gt;你工作的每个工程对于相同的类都可能有自己的运算符意义😿&lt;/p&gt;
+&lt;p&gt;运算符重载是有争议的，这些链接也许能帮助你决定（不是所有的都指向同一个结论）：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://cafe.elharo.com/programming/operator-overloading-considered-harmful&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Operator Overloading Considered Harmful&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://james-iry.blogspot.ru/2009/03/operator-overloading-ad-absurdum.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Operator Overloading Ad Absurdum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;http://blog.jooq.org/2014/02/10/why-everyone-hates-operator-overloading&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Why Everyone Hates Operator Overloading&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;原文链接&lt;a href=&quot;http://gold.xitu.io/entry/56ea7118731956005d037ef1&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;在此&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;尽管Kotlin在许多方面都优于Java，但是还是有
+    
+    </summary>
+    
+    
+  </entry>
+  
+</feed>
